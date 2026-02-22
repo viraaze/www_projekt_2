@@ -1,16 +1,22 @@
 const { allAsync, runAsync } = require('../models/db');
 
 exports.getAnimals = async (req, res) => {
-  const animals = await allAsync('SELECT * FROM animals');
-  res.render('index', { animals, title: 'Schronisko dla zwierząt' });
+  const { search } = req.query;
+  let animals;
+  if (search) {
+    animals = await allAsync('SELECT * FROM animals WHERE name LIKE ?', [`%${search}%`]);
+  } else {
+    animals = await allAsync('SELECT * FROM animals');
+  }
+  res.render('index', { animals, title: 'Schronisko dla zwierząt', search: search || '' });
 };
 
 exports.addAnimal = async (req, res) => {
-  const { name, species, age, description } = req.body;
+  const { name, species, age, gender, description } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
   await runAsync(
-    'INSERT INTO animals (name, species, age, description, image) VALUES (?, ?, ?, ?, ?)',
-    [name, species, age || null, description, image]
+    'INSERT INTO animals (name, species, age, gender, description, image) VALUES (?, ?, ?, ?, ?, ?)',
+    [name, species, age || null, gender || null, description, image]
   );
   res.redirect('/');
 };
@@ -29,18 +35,18 @@ exports.getEditForm = async (req, res) => {
 
 exports.editAnimal = async (req, res) => {
   const { id } = req.params;
-  const { name, species, age, description } = req.body;
+  const { name, species, age, gender, description } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
   
   if (image) {
     await runAsync(
-      'UPDATE animals SET name = ?, species = ?, age = ?, description = ?, image = ? WHERE id = ?',
-      [name, species, age || null, description, image, id]
+      'UPDATE animals SET name = ?, species = ?, age = ?, gender = ?, description = ?, image = ? WHERE id = ?',
+      [name, species, age || null, gender || null, description, image, id]
     );
   } else {
     await runAsync(
-      'UPDATE animals SET name = ?, species = ?, age = ?, description = ? WHERE id = ?',
-      [name, species, age || null, description, id]
+      'UPDATE animals SET name = ?, species = ?, age = ?, gender = ?, description = ? WHERE id = ?',
+      [name, species, age || null, gender || null, description, id]
     );
   }
   res.redirect('/');

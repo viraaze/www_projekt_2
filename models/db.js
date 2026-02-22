@@ -29,6 +29,7 @@ function initializeDatabase() {
       name TEXT NOT NULL,
       species TEXT NOT NULL,
       age INTEGER,
+      gender TEXT,
       description TEXT,
       image TEXT
     )
