@@ -1,0 +1,46 @@
+<%- include('partials/header') %>
+
+<div class="container mt-4">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <a href="/add" class="btn btn-primary">+ Dodaj nowe zwierzę</a>
+    </div>
+  </div>
+
+  <div class="row">
+    <% if (animals && animals.length > 0) { %>
+      <% animals.forEach(animal => { %>
+        <div class="col-md-4 mb-3">
+          <div class="card">
+            <% if (animal.image) { %>
+              <img src="<%= animal.image %>" class="card-img-top" alt="<%= animal.name %>">
+            <% } else { %>
+              <div class="card-img-top placeholder-image">
+                <div>🐾</div>
+                <p>Brak zdjęcia</p>
+              </div>
+            <% } %>
+            <div class="card-body">
+              <h5 class="card-title"><%= animal.name %></h5>
+              <p class="card-text">
+                <strong>Gatunek:</strong> <%= animal.species %><br>
+                <strong>Wiek:</strong> <%= animal.age %> lat<br>
+                <strong>Opis:</strong> <%= animal.description || 'Brak opisu' %>
+              </p>
+              <a href="/edit/<%= animal.id %>" class="btn btn-warning btn-sm">✏️ Edytuj</a>
+              <form method="POST" action="/delete/<%= animal.id %>" style="display: inline;" onsubmit="return confirm('Na pewno chcesz usunąć <%= animal.name %>?')">
+                <button type="submit" class="btn btn-danger btn-sm">🗑️ Usuń</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    <% } else { %>
+      <div class="col-md-12">
+        <p class="alert alert-info">Brak zwierząt w schronisku</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
